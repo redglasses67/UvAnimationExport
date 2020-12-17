@@ -276,6 +276,8 @@ def getSetAnim(srcAttrName, dstBaseAttrName, animBaseNodeName, fnDepNode, matNod
 		matNode {MFnDependencyNode} -- material node
 		p2tNode {MFnDependencyNode} -- place2dTexture node
 	"""
+	if p2tNode.hasAttribute(srcAttrName) == False:
+		return
 
 	newAttrName = dstBaseAttrName + "_" + matNode.name()
 
@@ -292,7 +294,7 @@ def getSetAnim(srcAttrName, dstBaseAttrName, animBaseNodeName, fnDepNode, matNod
 
 	copyAnimNodeName = animBaseNodeName + "_" + matNode.name()
 
-	if p2tNode.hasAttribute(srcAttrName) and fnDepNode.hasAttribute(newAttrName):
+	if fnDepNode.hasAttribute(newAttrName):
 		srcAttrPlug = p2tNode.findPlug(srcAttrName, False)
 		srcAnimNode = srcAttrPlug.source().node()
 		copyAnimObj   = None
