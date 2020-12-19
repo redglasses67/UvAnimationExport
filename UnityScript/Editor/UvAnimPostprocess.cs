@@ -84,6 +84,24 @@ public class UvAnimPostprocess : AssetPostprocessor
 		// ルートの Transform からの相対パスを取得できる（ルートは含まれない）
 		var relativePath  = AnimationUtility.CalculateTransformPath(importedTrans, importedTrans.root);
 
+		var isMeshRenderer        = false;
+		var isSkinnedMeshRenderer = false;
+		var mr = importedGameObject.GetComponents<MeshRenderer>();
+		if (mr != null)
+		{
+			isMeshRenderer = true;
+		}
+		else
+		{
+			var smr = importedGameObject.GetComponents<SkinnedMeshRenderer>();
+			if (smr != null)
+			{
+				isSkinnedMeshRenderer = true;
+			}
+		}
+
+		if (isMeshRenderer == false && isSkinnedMeshRenderer == false) { return; }
+
 		for (var i = 0; i < bindings.Length; i++)
 		{
 			var propName = bindings[i].propertyName;
@@ -97,7 +115,15 @@ public class UvAnimPostprocess : AssetPostprocessor
 			}
 
 			bindings[i].path = relativePath;
-			bindings[i].type = typeof(MeshRenderer);
+			if (isMeshRenderer)
+			{
+				bindings[i].type = typeof(MeshRenderer);
+			}
+			else if (isSkinnedMeshRenderer)
+			{
+				bindings[i].type = typeof(SkinnedMeshRenderer);
+			}
+
 			// Legacy パイプラインですとメインテクスチャーのプロパティ名は _MainTex ですが、
 			// URP では _BaseMap : HDRP では _BaseColorMap となっているので注意（ Unityさん、なぜ統一しない… ）
 			if (propName.StartsWith("uvRepeatAnimU"))
